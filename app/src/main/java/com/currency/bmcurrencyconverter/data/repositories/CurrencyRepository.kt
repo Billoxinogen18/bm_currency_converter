@@ -55,6 +55,8 @@ class CurrencyRepository @Inject constructor(private val api: FixerApi) {
         }
     }
 
+    //TODO fetch timeseries
+
     suspend fun getHistoricalRates(
         apiKey: String,
         startDate: String,

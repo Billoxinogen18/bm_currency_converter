@@ -39,9 +39,11 @@ fun HistoricalDataScreen(viewModel: CurrencyViewModel) {
         listOf("USD", "GBP", "INR", "AUD", "CAD", "CHF", "CNY", "JPY", "NZD", "BRL", "ZAR")
     val popularRates by viewModel.popularRates.observeAsState(emptyMap())
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Text(
             "Historical Data",
             style = MaterialTheme.typography.h6,
@@ -49,12 +51,11 @@ fun HistoricalDataScreen(viewModel: CurrencyViewModel) {
         )
 
         if (historicalData.isNotEmpty()) {
-            // Using MPAndroidChart library to display prevailing currency conversions for top currencies
             HistoricalDataChart(historicalData)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-    
+            // Using MPAndroidChart library to display prevailing currency conversions for top currencies
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -123,6 +124,8 @@ fun HistoricalDataChart(historicalData: List<HistoricalData>) {
                     setDrawLabels(true)
                     setDrawAxisLine(false)
                     position = XAxis.XAxisPosition.BOTTOM
+                    granularity = 1f
+                    valueFormatter = XAxisDateFormatter(historicalData)
                 }
 
                 axisRight.isEnabled = false
@@ -139,9 +142,9 @@ fun HistoricalDataChart(historicalData: List<HistoricalData>) {
             .fillMaxWidth()
             .height(300.dp),
         update = { lineChart ->
-            val entries = historicalData.flatMap { data ->
+            val entries = historicalData.takeLast(3).flatMapIndexed { index, data ->
                 data.rates.map { (currency, rate) ->
-                    Entry(data.date.toFloat(), rate.toFloat())
+                    Entry(index.toFloat(), rate.toFloat())
                 }
             }
 
@@ -158,4 +161,19 @@ fun HistoricalDataChart(historicalData: List<HistoricalData>) {
             lineChart.invalidate()
         }
     )
+}
+
+class XAxisDateFormatter(private val historicalData: List<HistoricalData>) :
+    com.github.mikephil.charting.formatter.ValueFormatter() {
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    override fun getFormattedValue(value: Float): String {
+        val index = value.toInt()
+        return if (index >= 0 && index < historicalData.size) {
+            val dateInMillis = historicalData[index].date
+            dateFormat.format(Date(dateInMillis))
+        } else {
+            ""
+        }
+    }
 }

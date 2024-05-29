@@ -14,6 +14,7 @@ interface FixerApi {
         @Query("symbols") symbols: String
     ): Response<CurrencyResponse>
 
+    //TODO Fetch rates using timeseries(Paid)
     @GET("timeseries")
     suspend fun getHistoricalRates(
         @Query("access_key") apiKey: String,

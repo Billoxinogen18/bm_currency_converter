@@ -29,7 +29,7 @@ class CurrencyViewModelTest {
     private lateinit var repository: CurrencyRepository
 
     @Mock
-    private lateinit var latestRatesObserver: Observer<CurrencyResponse>
+    private lateinit var latestRatesObserver: Observer<CurrencyResponse?>
 
     @Mock
     private lateinit var popularRatesObserver: Observer<Map<String, Double>>

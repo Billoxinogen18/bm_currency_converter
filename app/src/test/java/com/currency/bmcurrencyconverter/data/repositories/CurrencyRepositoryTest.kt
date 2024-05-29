@@ -11,20 +11,27 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(MockitoJUnitRunner::class)
 class CurrencyRepositoryTest {
+
+    @Mock
     private lateinit var api: FixerApi
+
     private lateinit var repository: CurrencyRepository
 
     @Before
     fun setUp() {
-        api = mock(FixerApi::class.java)
+        MockitoAnnotations.initMocks(this)
         repository = CurrencyRepository(api)
     }
 

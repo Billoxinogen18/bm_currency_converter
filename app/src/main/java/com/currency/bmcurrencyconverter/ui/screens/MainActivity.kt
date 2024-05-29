@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.currency.bmcurrencyconverter.viewmodels.CurrencyViewModel
-import com.currency.currencyconverter.ui.HistoricalDataScreen
 import com.currency.currencyconverter.ui.theme.CurrencyConverterTheme
 import dagger.hilt.android.AndroidEntryPoint
 

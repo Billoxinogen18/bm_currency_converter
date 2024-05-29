@@ -1,4 +1,4 @@
-package com.currency.currencyconverter.ui
+package com.currency.bmcurrencyconverter.ui.screens
 
 import android.graphics.Color
 import android.widget.LinearLayout
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ fun HistoricalDataScreen(viewModel: CurrencyViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             "Historical Data",

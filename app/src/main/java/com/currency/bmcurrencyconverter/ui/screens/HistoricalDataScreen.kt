@@ -49,12 +49,12 @@ fun HistoricalDataScreen(viewModel: CurrencyViewModel) {
         )
 
         if (historicalData.isNotEmpty()) {
-            // Chart
+            // Using MPAndroidChart library to display prevailing currency conversions for top currencies
             HistoricalDataChart(historicalData)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Historical Data List and Popular Currencies
+    
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(

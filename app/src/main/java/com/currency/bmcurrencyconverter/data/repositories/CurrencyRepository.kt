@@ -1,7 +1,7 @@
 package com.currency.bmcurrencyconverter.data.repositories
 
 
-import com.currency.bmcurrencyconverter.data.netbean.FixerApi
+import com.currency.bmcurrencyconverter.data.api.FixerApi
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
 import com.currency.bmcurrencyconverter.data.responseRepositories.HistoricalResponse
 import retrofit2.Response

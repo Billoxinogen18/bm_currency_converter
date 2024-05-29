@@ -1,4 +1,4 @@
-package com.currency.bmcurrencyconverter.data.netbean
+package com.currency.bmcurrencyconverter.data.api
 
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
 import com.currency.bmcurrencyconverter.data.responseRepositories.HistoricalResponse

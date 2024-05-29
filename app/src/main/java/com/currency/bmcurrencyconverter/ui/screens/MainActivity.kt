@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                 CurrencyApp(viewModel)
             }
         }
-        viewModel.fetchLatestRatesForPopularCurrencies() // Calling this at entry point: This allows app to load history Data Screen with ready info
+        viewModel.fetchLatestRatesForPopularCurrencies() // Calling this at entry point: This allows app to load history Data Screen with minimised latency: Minimised API usage
     }
 }
 

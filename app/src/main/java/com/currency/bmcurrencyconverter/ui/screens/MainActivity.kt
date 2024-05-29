@@ -1,4 +1,4 @@
-package com.currency.currencyconverter
+package com.currency.bmcurrencyconverter.ui.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.currency.bmcurrencyconverter.ui.screens.CurrencyScreen
 import com.currency.bmcurrencyconverter.viewmodels.CurrencyViewModel
 import com.currency.currencyconverter.ui.HistoricalDataScreen
 import com.currency.currencyconverter.ui.theme.CurrencyConverterTheme

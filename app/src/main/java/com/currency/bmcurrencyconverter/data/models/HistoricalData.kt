@@ -5,7 +5,3 @@ data class HistoricalData(
     val rates: Map<String, Double>
 )
 
-data class HistoricalData(
-    val date: Long,
-    val rates: Map<String, Double>
-)

@@ -7,7 +7,10 @@ plugins {
 android {
     namespace = "com.currency.bmcurrencyconverter"
     compileSdk = 34
-
+    //Keeping up with compose compiler vs kotlin compiler is actually crazy(do not remove or app won't compile lol)
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
     defaultConfig {
         applicationId = "com.currency.bmcurrencyconverter"
         minSdk = 24
@@ -40,6 +43,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
     implementation("androidx.core:core-ktx:1.13.1")
@@ -58,7 +62,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation(libs.androidx.runtime.livedata)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
-    implementation("androidx.compose.ui:ui:1.5.14")
+    implementation("androidx.compose.ui:ui:1.6.7")
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-beta01")

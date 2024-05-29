@@ -7,10 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.currency.bmcurrencyconverter.data.models.HistoricalData
-import com.currency.bmcurrencyconverter.data.repositories.CurrencyRepository
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
+import com.currency.currencyconverter.dataControllers.repositories.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,30 +37,15 @@ class CurrencyViewModel @Inject constructor(
             try {
                 val response = repository.getLatestRates(apiKey, base, symbols)
                 response?.let {
-                    if (it.isSuccessful) {
-                        val body = it.body()
-                        body?.let { responseBody ->
-                            _latestRates.value = responseBody
-                            responseBody.rates?.let { rates ->
-                                saveConversion(
-                                    System.currentTimeMillis(),
-                                    rates
-                                )
-                            }
-                        } ?: run {
-                            Log.e("CurrencyViewModel", "Response body is null")
-                        }
-                    } else {
-                        Log.e(
-                            "CurrencyViewModel",
-                            "Error fetching latest rates: ${it.errorBody()?.string()}"
-                        )
-                    }
+                    _latestRates.value = it
+                    it.rates?.let { rates -> saveConversion(System.currentTimeMillis(), rates) }
                 } ?: run {
-                    Log.e("CurrencyViewModel", "Response is null")
+                    Log.e("CurrencyViewModel", "Error fetching latest rates")
                 }
+            } catch (e: IOException) {
+                Log.e("CurrencyViewModel", "Network error fetching latest rates", e)
             } catch (e: Exception) {
-                Log.e("CurrencyViewModel", "Exception fetching latest rates", e)
+                Log.e("CurrencyViewModel", "Unexpected error fetching latest rates", e)
             }
         }
     }
@@ -72,35 +58,25 @@ class CurrencyViewModel @Inject constructor(
 
     fun fetchLatestRatesForPopularCurrencies() {
         val base = "EUR"
-        val symbols = "USD,GBP,INR,CAD,AUD,CHF,CNY,JPY,SEK,NZD"
+        val symbols = "USD,GBP,INR,JPY,CHF,AUD,CAD,NZD,CNY,SGD"
         viewModelScope.launch {
             try {
                 val response =
                     repository.getLatestRates("a69d81bc19062a3523984353e3e11a0f", base, symbols)
                 response?.let {
-                    if (it.isSuccessful) {
-                        val body = it.body()
-                        body?.let { responseBody ->
-                            responseBody.rates?.let { rates ->
-                                _popularRates.value = rates
-                                savePopularRatesToPreferences(rates)
-                            } ?: run {
-                                Log.e("CurrencyViewModel", "Rates are null in response body")
-                            }
-                        } ?: run {
-                            Log.e("CurrencyViewModel", "Response body is null")
-                        }
-                    } else {
-                        Log.e(
-                            "CurrencyViewModel",
-                            "Error fetching popular rates: ${it.errorBody()?.string()}"
-                        )
+                    it.rates?.let { rates ->
+                        _popularRates.value = rates
+                        savePopularRatesToPreferences(rates)
+                    } ?: run {
+                        Log.e("CurrencyViewModel", "Error fetching popular rates: Rates are null")
                     }
                 } ?: run {
-                    Log.e("CurrencyViewModel", "Response is null")
+                    Log.e("CurrencyViewModel", "Error fetching popular rates")
                 }
+            } catch (e: IOException) {
+                Log.e("CurrencyViewModel", "Network error fetching popular rates", e)
             } catch (e: Exception) {
-                Log.e("CurrencyViewModel", "Exception fetching popular rates", e)
+                Log.e("CurrencyViewModel", "Unexpected error fetching popular rates", e)
             }
         }
     }

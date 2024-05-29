@@ -1,21 +1,56 @@
-package com.currency.bmcurrencyconverter.data.repositories
+package com.currency.currencyconverter.dataControllers.repositories
 
-
+import android.util.Log
 import com.currency.bmcurrencyconverter.data.api.FixerApi
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
 import com.currency.bmcurrencyconverter.data.responseRepositories.HistoricalResponse
-import retrofit2.Response
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class CurrencyRepository @Inject constructor(private val api: FixerApi) {
-    suspend fun getLatestRates(
-        apiKey: String,
-        base: String,
-        symbols: String
-    ): Response<CurrencyResponse>? {
+
+    suspend fun getLatestRates(apiKey: String, base: String, symbols: String): CurrencyResponse? {
         return try {
-            api.getLatestRates(apiKey, base, symbols)
+            val response = api.getLatestRates(apiKey, base, symbols)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                Log.e(
+                    "CurrencyRepository",
+                    "Error fetching latest rates: ${response.code()} ${response.message()}"
+                )
+                null
+            }
+        } catch (e: IOException) {
+            when (e) {
+                is SocketTimeoutException -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching latest rates: Server is down or network is slow ${e.message}"
+                )
+
+                is UnknownHostException -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching latest rates: No internet connection ${e.message}"
+                )
+
+                else -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching latest rates: Network issue ${e.message}"
+                )
+            }
+            null
+        } catch (e: HttpException) {
+            Log.e("CurrencyRepository", "Error fetching latest rates: API issue ${e.message()}")
+            //TODO handle API specific error logging
+            null
         } catch (e: Exception) {
+            Log.e(
+                "CurrencyRepository",
+                "Error fetching latest rates: Unexpected error ${e.message}"
+            )
             null
         }
     }
@@ -26,10 +61,45 @@ class CurrencyRepository @Inject constructor(private val api: FixerApi) {
         endDate: String,
         base: String,
         symbols: String
-    ): Response<HistoricalResponse>? {
+    ): HistoricalResponse? {
         return try {
-            api.getHistoricalRates(apiKey, startDate, endDate, base, symbols)
+            val response = api.getHistoricalRates(apiKey, startDate, endDate, base, symbols)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                Log.e(
+                    "CurrencyRepository",
+                    "Error fetching historical rates: ${response.code()} ${response.message()}"
+                )
+                null
+            }
+        } catch (e: IOException) {
+            when (e) {
+                is SocketTimeoutException -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching historical rates: Server is down or network is slow ${e.message}"
+                )
+
+                is UnknownHostException -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching historical rates: No internet connection ${e.message}"
+                )
+
+                else -> Log.e(
+                    "CurrencyRepository",
+                    "Error fetching historical rates: Network issue ${e.message}"
+                )
+            }
+            null
+        } catch (e: HttpException) {
+            Log.e("CurrencyRepository", "Error fetching historical rates: API issue ${e.message()}")
+            //TODO handle API specific error logging
+            null
         } catch (e: Exception) {
+            Log.e(
+                "CurrencyRepository",
+                "Error fetching historical rates: Unexpected error ${e.message}"
+            )
             null
         }
     }

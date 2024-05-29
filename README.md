@@ -1,72 +1,42 @@
-Currency Converter App
-Currency Converter is an Android application that allows users to convert currencies from different bases, view historical exchange rates, and see conversions to popular currencies. The app is designed with a focus on clean architecture, responsive layouts, and robust error handling.
+# Currency Converter App
 
-Features
-Currency Conversion
-Convert currencies from EUR to various other currencies.
-Select from a dropdown list of available currencies.
-Automatically update the converted value when the amount or currency selection changes.
-Swap the base and target currencies with a single click.
-Historical Data
-View historical exchange rates for the past three days.
-Display historical data in both list and chart formats.
-Access historical data from the details screen.
-Popular Currencies
-View conversions from EUR to popular currencies (USD, GBP, INR, and more).
-Automatically fetch and display the latest rates for these popular currencies.
-Technical Stack
-Architecture
-Jetpack MVVM: Implements the Model-View-ViewModel pattern using Android Jetpack libraries.
-Clean Architecture: Ensures a clear separation of concerns and modularity.
-Libraries and Tools
-Kotlin: The primary programming language.
-Coroutines: For asynchronous programming.
-Retrofit: For making API calls to the Fixer.io service.
-Hilt: For dependency injection.
-Data Binding: For binding UI components to data sources.
-Navigation Component: For handling navigation and screen transitions.
-MPAndroidChart: For displaying historical data in chart format.
-Error Handling
-Differentiates between internet connection errors and API errors.
-Displays appropriate messages to the user based on the error type.
-UI Design
-Responsive and adaptive layouts for different device screens (excluding tablets).
-Supports both portrait and landscape modes.
-Follows Material Design guidelines.
-Storage
-SharedPreferences: Used to persist the latest rates for popular currencies, ensuring data is available even after app restarts.
-Project Structure
-Modules
-app: Contains the main application code.
-data: Contains data models, repository interfaces, and network API definitions.
-di: Contains dependency injection modules.
-ui: Contains UI components and screens.
-viewmodels: Contains ViewModel classes.
-Key Components
-CurrencyViewModel: Manages data for currency conversion and historical data.
-CurrencyRepository: Handles data fetching from the Fixer.io API.
-FixerApi: Defines API endpoints for currency conversion and historical data.
-Setup and Installation
-Clone the repository:
+## Overview
 
-sh
-Copy code
-git clone https://github.com/your-username/currency-converter.git
-cd currency-converter
-Open the project in Android Studio.
+The Currency Converter App is a robust and user-friendly application designed to provide accurate currency conversion and historical data. Built using modern Android development tools and best practices, this app offers a seamless experience for users to convert currencies on-the-go and view historical exchange rate trends.
 
-Add your Fixer.io API key to the project. You can do this by updating the ApiKey in the CurrencyViewModel class.
+## Features
 
-Build and run the project on an emulator or a physical device.
+- **Real-time Currency Conversion**: Convert between multiple currencies with up-to-date exchange rates.
+- **Historical Data Visualization**: View historical exchange rate data for selected currencies over different time periods.
+- **Adaptive UI**: Optimized for various screen sizes, ensuring a consistent user experience across all devices.
+- **Error Handling**: Comprehensive error handling mechanisms to ensure smooth operation even under poor network conditions.
+- **Popular Rates Storage**: Uses Shared Preferences to store and quickly access popular currency rates.
+- **Search Functionality**: Easily search for and select currencies for conversion.
+- **Unit Tests**: Thoroughly tested components to ensure reliability and correctness.
 
-Testing
-Unit tests are included for ViewModel and Repository classes.
-Ensure code is formatted and free of linting issues before committing.
-Contributing
-Fork the repository.
-Create a new branch (git checkout -b feature-branch).
-Commit your changes (git commit -am 'Add new feature').
-Push to the branch (git push origin feature-branch).
-Create a new Pull Request.
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Technology Stack
+
+### Architecture
+- **MVVM (Model-View-ViewModel)**: Ensures a clear separation of concerns and promotes a clean, testable codebase.
+
+### Libraries and Tools
+- **Jetpack Components**:
+  - **Navigation Component**: Simplifies navigation and supports consistent and predictable user interactions.
+  - **Data Binding**: Binds UI components in layouts to data sources in your app using a declarative format.
+  - **LiveData**: Data objects that notify views when the underlying database changes.
+- **KTX**: Kotlin extensions that enhance productivity and readability.
+- **Hilt**: Dependency injection framework for managing the lifecycle and dependencies of various components.
+- **Coroutines**: Simplifies asynchronous programming and ensures smooth UI performance.
+- **Retrofit**: Type-safe HTTP client for making API calls and handling network requests.
+
+### Additional Tools
+- **Gradle**: Build automation tool for managing dependencies and building the project.
+- **Lint**: Static code analysis tool to identify and correct potential issues.
+- **ktlint**: Kotlin linter and formatter to ensure code quality and consistency.
+
+## Installation
+
+. **Clone the repository**:
+   ```sh
+   git clone https://github.com/yourusername/currency-converter-app.git
+   cd currency-converter-app

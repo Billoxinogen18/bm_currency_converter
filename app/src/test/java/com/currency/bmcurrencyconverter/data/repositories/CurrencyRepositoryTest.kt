@@ -3,78 +3,70 @@ package com.currency.bmcurrencyconverter.data.repositories
 import com.currency.bmcurrencyconverter.data.api.FixerApi
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
 import com.currency.currencyconverter.dataControllers.repositories.CurrencyRepository
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
-import retrofit2.HttpException
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import retrofit2.Response
 import java.io.IOException
+import java.net.SocketTimeoutException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CurrencyRepositoryTest {
-
-    @Mock
     private lateinit var api: FixerApi
-
     private lateinit var repository: CurrencyRepository
 
     @Before
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
+    fun setUp() {
+        api = mock(FixerApi::class.java)
         repository = CurrencyRepository(api)
     }
 
     @Test
-    fun `getLatestRates should return response when api call is successful`() = runBlocking {
-        val expectedResponse = CurrencyResponse(rates = mapOf("USD" to 1.2, "GBP" to 0.8))
-        Mockito.`when`(api.getLatestRates("api_key", "EUR", "USD,GBP"))
-            .thenReturn(Response.success(expectedResponse))
+    fun `getLatestRates should return response when api call is successful`() = runTest {
+        val response = Response.success(CurrencyResponse(mapOf("USD" to 1.2)))
+        `when`(api.getLatestRates("apiKey", "EUR", "USD")).thenReturn(response)
 
-        val actualResponse = repository.getLatestRates("api_key", "EUR", "USD,GBP")
-
-        assert(actualResponse == expectedResponse)
+        val result = repository.getLatestRates("apiKey", "EUR", "USD")
+        assertNotNull(result)
+        assertEquals(1.2, result?.rates?.get("USD"))
     }
 
     @Test
-    fun `getLatestRates should return null when api call fails`() = runBlocking {
-        val errorResponse = Response.error<CurrencyResponse>(500, "".toResponseBody(null))
+    fun `getLatestRates should return null when api call fails`() = runTest {
+        val response = Response.error<CurrencyResponse>(400, "error".toResponseBody(null))
+        `when`(api.getLatestRates("apiKey", "EUR", "USD")).thenReturn(response)
 
-        Mockito.`when`(api.getLatestRates("api_key", "EUR", "USD,GBP"))
-            .thenReturn(errorResponse)
-
-        val actualResponse = repository.getLatestRates("api_key", "EUR", "USD,GBP")
-
-        assert(actualResponse == null)
+        val result = repository.getLatestRates("apiKey", "EUR", "USD")
+        assertNull(result)
     }
 
     @Test
-    fun `getLatestRates should handle IOException`() = runBlocking {
-        Mockito.`when`(api.getLatestRates("api_key", "EUR", "USD,GBP"))
-            .thenThrow(IOException("Network error"))
+    fun `getLatestRates should handle IOException`() = runTest {
+        `when`(api.getLatestRates("apiKey", "EUR", "USD")).thenThrow(IOException::class.java)
 
-        val actualResponse = repository.getLatestRates("api_key", "EUR", "USD,GBP")
-
-        assert(actualResponse == null)
+        val result = repository.getLatestRates("apiKey", "EUR", "USD")
+        assertNull(result)
     }
 
     @Test
-    fun `getLatestRates should handle HttpException`() = runBlocking {
-        Mockito.`when`(api.getLatestRates("api_key", "EUR", "USD,GBP"))
-            .thenThrow(
-                HttpException(
-                    Response.error<CurrencyResponse>(
-                        400,
-                        "".toResponseBody(null)
-                    )
-                )
+    fun `getLatestRates should handle SocketTimeoutException`() = runTest {
+        `when`(
+            api.getLatestRates(
+                "apiKey",
+                "EUR",
+                "USD"
             )
+        ).thenThrow(SocketTimeoutException::class.java)
 
-        val actualResponse = repository.getLatestRates("api_key", "EUR", "USD,GBP")
-
-        assert(actualResponse == null)
+        val result = repository.getLatestRates("apiKey", "EUR", "USD")
+        assertNull(result)
     }
 }

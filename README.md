@@ -1,4 +1,4 @@
-# Currency Converter App
+# BM Currency Converter App
 
 ## Overview
 

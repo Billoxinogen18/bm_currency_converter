@@ -6,11 +6,17 @@ The Currency Converter App is a robust and user-friendly application designed to
 
 ## Screenshots
 
-### Currency Conversion
-<img src="https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.52.png" alt="Currency Conversion" width="400">
+<div style="display: flex; justify-content: space-around;">
+    <div>
+        <h4>Currency Conversion</h4>
+        <img src="https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.52.png" alt="Currency Conversion" width="400">
+    </div>
+    <div>
+        <h4>Historical Data</h4>
+        <img src="https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.42.png" alt="Historical Data" width="400">
+    </div>
+</div>
 
-### Historical Data
-<img src="https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.42.png" alt="Historical Data" width="400">
 
 
 ## Features

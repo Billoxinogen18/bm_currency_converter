@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.currency.bmcurrencyconverter.viewmodels.CurrencyViewModel
@@ -33,10 +35,20 @@ fun CurrencyScreen(viewModel: CurrencyViewModel, navController: NavHostControlle
     var fromCurrency by remember { mutableStateOf("EUR") }
     var toCurrency by remember { mutableStateOf("USD") }
     var amount by remember { mutableStateOf("1") }
+    var convertedAmount by remember { mutableStateOf("N/A") }
     val latestRates by viewModel.latestRates.observeAsState()
+    var conversionRate by remember { mutableStateOf(1.0) }
 
     LaunchedEffect(toCurrency) {
-        viewModel.fetchLatestRates("a69d81bc19062a3523984353e3e11a0f", fromCurrency, toCurrency)
+        viewModel.fetchLatestRates("e2f2be97b38a4b3d7c2df3f641e64f2a", fromCurrency, toCurrency)
+    }
+
+    LaunchedEffect(latestRates) {
+        latestRates?.let { rates ->
+            val rate = rates.rates?.get(toCurrency)?.times(amount.toDoubleOrNull() ?: 1.0)
+            conversionRate = rates.rates?.get(toCurrency) ?: 1.0
+            convertedAmount = rate?.toString() ?: "N/A"
+        }
     }
 
     Column(
@@ -55,12 +67,24 @@ fun CurrencyScreen(viewModel: CurrencyViewModel, navController: NavHostControlle
                 onItemSelected = { fromCurrency = it }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("↔", modifier = Modifier.align(Alignment.CenterVertically))
+            Button(
+                onClick = {
+                    val temp = fromCurrency
+                    fromCurrency = toCurrency
+                    toCurrency = temp
+                    val inverseRate = 1 / conversionRate
+                    amount =
+                        (convertedAmount.toDoubleOrNull()?.times(inverseRate) ?: 0.0).toString()
+                    convertedAmount =
+                        (amount.toDoubleOrNull()?.times(conversionRate) ?: 0.0).toString()
+                }
+            ) {
+                Text("↔")
+            }
             Spacer(modifier = Modifier.width(8.dp))
             DropdownMenu(
                 items = listOf(
                     "USD",
-                    "EUR",
                     "GBP",
                     "INR",
                     "CAD",
@@ -71,24 +95,49 @@ fun CurrencyScreen(viewModel: CurrencyViewModel, navController: NavHostControlle
                     "NZD"
                 ),
                 selectedItem = toCurrency,
-                onItemSelected = { toCurrency = it }
+                onItemSelected = {
+                    toCurrency = it
+                    viewModel.fetchLatestRates(
+                        "e2f2be97b38a4b3d7c2df3f641e64f2a",
+                        fromCurrency,
+                        toCurrency
+                    )
+                }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = amount,
-            onValueChange = { amount = it },
-            label = { Text("Amount in EUR") },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        latestRates?.let { rates ->
-            val rate = rates.rates?.get(toCurrency)?.times(amount.toDouble())
-            Text(
-                "Converted Amount: ${rate ?: "N/A"}",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            TextField(
+                value = amount,
+                onValueChange = { newValue ->
+                    if (newValue.isValidNumber()) {
+                        amount = newValue
+                        val rate = conversionRate.times(newValue.toDoubleOrNull() ?: 1.0)
+                        convertedAmount = rate.toString()
+                    }
+                },
+                label = { Text("Amount in EUR") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.width(150.dp)
             )
-        } ?: Text("Converted Amount: N/A", modifier = Modifier.align(Alignment.CenterHorizontally))
+            Spacer(modifier = Modifier.width(16.dp))
+            TextField(
+                value = convertedAmount,
+                onValueChange = { newValue ->
+                    if (newValue.isValidNumber()) {
+                        convertedAmount = newValue
+                        val inverseRate = 1 / conversionRate
+                        amount = newValue.toDoubleOrNull()?.times(inverseRate)?.toString() ?: ""
+                    }
+                },
+                label = { Text("Converted Amount") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.width(150.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { navController.navigate("historical_data_screen") },
@@ -100,10 +149,15 @@ fun CurrencyScreen(viewModel: CurrencyViewModel, navController: NavHostControlle
 }
 
 @Composable
-fun DropdownMenu(items: List<String>, selectedItem: String, onItemSelected: (String) -> Unit) {
+fun DropdownMenu(
+    items: List<String>,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box {
+    Box(modifier = modifier) {
         Button(onClick = { expanded = true }) {
             Text(selectedItem)
         }
@@ -118,4 +172,8 @@ fun DropdownMenu(items: List<String>, selectedItem: String, onItemSelected: (Str
             }
         }
     }
+}
+
+private fun String.isValidNumber(): Boolean {
+    return this.toDoubleOrNull() != null
 }

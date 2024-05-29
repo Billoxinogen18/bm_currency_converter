@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun CurrencyApp(viewModel: CurrencyViewModel) {
     val navController = rememberNavController()

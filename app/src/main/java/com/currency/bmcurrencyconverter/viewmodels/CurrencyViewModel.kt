@@ -62,7 +62,7 @@ class CurrencyViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response =
-                    repository.getLatestRates("a69d81bc19062a3523984353e3e11a0f", base, symbols)
+                    repository.getLatestRates("e2f2be97b38a4b3d7c2df3f641e64f2a", base, symbols)
                 response?.let {
                     it.rates?.let { rates ->
                         _popularRates.value = rates

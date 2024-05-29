@@ -1,56 +1,102 @@
-package com.currency.bmcurrencyconverter.viewmodels
-
-import com.currency.bmcurrencyconverter.data.api.FixerApi
+import android.content.SharedPreferences
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Observer
+import com.currency.bmcurrencyconverter.data.models.HistoricalData
 import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyResponse
+import com.currency.bmcurrencyconverter.viewmodels.CurrencyViewModel
 import com.currency.currencyconverter.dataControllers.repositories.CurrencyRepository
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import retrofit2.Response
 
-class CurrencyRepositoryTest {
+@ExperimentalCoroutinesApi
+class CurrencyViewModelTest {
+
+    private lateinit var viewModel: CurrencyViewModel
 
     @Mock
-    private lateinit var fixerApi: FixerApi
+    private lateinit var repository: CurrencyRepository
 
-    private lateinit var currencyRepository: CurrencyRepository
+    @Mock
+    private lateinit var sharedPreferences: SharedPreferences
+
+    @Mock
+    private lateinit var latestRatesObserver: Observer<CurrencyResponse>
+
+    @Mock
+    private lateinit var conversionHistoryObserver: Observer<List<HistoricalData>>
+
+    @Mock
+    private lateinit var popularRatesObserver: Observer<Map<String, Double>>
+
+    @get:Rule
+    var rule: TestRule = InstantTaskExecutorRule()
+
+    private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
-    fun setup() {
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
-        currencyRepository = CurrencyRepository(fixerApi)
+        viewModel = CurrencyViewModel(repository, sharedPreferences)
+        viewModel.latestRates.observeForever(latestRatesObserver)
+        viewModel.conversionHistory.observeForever(conversionHistoryObserver)
+        viewModel.popularRates.observeForever(popularRatesObserver)
     }
 
     @Test
-    fun `getLatestRates should return response when api call is successful`() = runBlocking {
-        val response =
-            Response.success(CurrencyResponse(base = "EUR", rates = mapOf("USD" to 1.12)))
-        `when`(fixerApi.getLatestRates("apiKey", "EUR", "USD")).thenReturn(response)
-
-        val result = currencyRepository.getLatestRates("apiKey", "EUR", "USD")
-
-        assertEquals(response, result)
-    }
-
-    @Test
-    fun `getLatestRates should return null when api call fails`() = runBlocking {
-        `when`(
-            fixerApi.getLatestRates(
-                "apiKey",
-                "EUR",
-                "USD"
+    fun `fetchLatestRates should post value when data is fetched successfully`() =
+        testDispatcher.runBlockingTest {
+            val expectedResponse = CurrencyResponse(
+                base = "EUR",
+                date = "2021-01-01",
+                rates = mapOf("USD" to 1.2, "GBP" to 0.9)
             )
-        ).thenThrow(RuntimeException::class.java)
 
-        val result = currencyRepository.getLatestRates("apiKey", "EUR", "USD")
+            Mockito.`when`(repository.getLatestRates("apiKey", "EUR", "USD,GBP"))
+                .thenReturn(expectedResponse)
 
-        assertNull(result)
+            viewModel.fetchLatestRates("apiKey", "EUR", "USD,GBP")
+
+            Mockito.verify(latestRatesObserver).onChanged(expectedResponse)
+            Mockito.verify(conversionHistoryObserver).onChanged(Mockito.anyList())
     }
 
-    //TODO add more tests
+    @Test
+    fun `fetchLatestRatesForPopularCurrencies should post value when data is fetched successfully`() =
+        testDispatcher.runBlockingTest {
+            val expectedResponse = CurrencyResponse(
+                base = "EUR",
+                date = "2021-01-01",
+                rates = mapOf("USD" to 1.2, "GBP" to 0.9, "INR" to 88.0)
+            )
+
+            Mockito.`when`(
+                repository.getLatestRates(
+                    "e2f2be97b38a4b3d7c2df3f641e64f2a",
+                    "EUR",
+                    "USD,GBP,INR"
+                )
+            )
+                .thenReturn(expectedResponse)
+
+            viewModel.fetchLatestRatesForPopularCurrencies()
+
+            Mockito.verify(popularRatesObserver).onChanged(expectedResponse.rates!!)
+    }
+
+    @Test
+    fun `getPopularRate should return rate from sharedPreferences`() {
+        Mockito.`when`(sharedPreferences.getFloat("USD", 0f)).thenReturn(1.2f)
+
+        val rate = viewModel.getPopularRate("USD")
+
+        assert(rate == 1.2f)
+    }
 }

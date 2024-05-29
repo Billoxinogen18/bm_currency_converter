@@ -5,7 +5,6 @@ import com.currency.bmcurrencyconverter.data.responseRepositories.CurrencyRespon
 import com.currency.currencyconverter.dataControllers.repositories.CurrencyRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull

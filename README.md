@@ -4,6 +4,14 @@
 
 The Currency Converter App is a robust and user-friendly application designed to provide accurate currency conversion and historical data. Built using modern Android development tools and best practices, this app offers a seamless experience for users to convert currencies on-the-go and view historical exchange rate trends.
 
+## Screenshots
+
+### Currency Conversion
+![Currency Conversion](https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.52.png)
+
+### Historical Data
+![Historical Data](https://github.com/Billoxinogen18/bm_currency_converter/blob/main/images/Screenshot%202024-05-29%20at%2017.17.42.png)
+
 ## Features
 
 - **Real-time Currency Conversion**: Convert between multiple currencies with up-to-date exchange rates.
